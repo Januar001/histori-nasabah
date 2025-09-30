@@ -16,10 +16,14 @@ return new class extends Migration
             $table->foreignId('nasabah_id')->constrained()->onDelete('cascade');
             $table->date('tanggal_janji');
             $table->decimal('nominal_janji', 15, 2)->default(0);
-            $table->string('status')->default('pending'); // pending/sukses/gagal
+            $table->enum('status', ['pending', 'sukses', 'gagal'])->default('pending');
             $table->text('keterangan')->nullable();
             $table->string('created_by');
             $table->timestamps();
+            
+            $table->index('nasabah_id');
+            $table->index('tanggal_janji');
+            $table->index('status');
         });
     }
 

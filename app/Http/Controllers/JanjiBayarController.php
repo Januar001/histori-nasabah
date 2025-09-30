@@ -21,6 +21,7 @@ class JanjiBayarController extends Controller
             'nasabah_id' => $request->nasabah_id,
             'tanggal_janji' => $request->tanggal_janji,
             'nominal_janji' => $request->nominal_janji,
+            'keterangan' => $request->keterangan,
             'created_by' => Auth::user()->name,
             'status' => 'pending'
         ]);

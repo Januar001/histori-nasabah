@@ -16,8 +16,8 @@ return new class extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->string('password');
-            $table->string('role')->default('petugas'); // admin/petugas
-            $table->string('divisi')->nullable(); // AO/Remedial/Special
+            $table->enum('role', ['admin', 'petugas'])->default('petugas');
+            $table->foreignId('petugas_id')->nullable()->constrained('petugas')->onDelete('set null');
             $table->rememberToken();
             $table->timestamps();
         });

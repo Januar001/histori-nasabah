@@ -22,7 +22,7 @@
                     <p class="text-muted">Silakan login untuk melanjutkan</p>
                 </div>
 
-                <form method="POST" action="/login">
+                <form method="POST" action="{{ route('login') }}">
                     @csrf
                     <div class="mb-3">
                         <label for="email" class="form-label">Email</label>

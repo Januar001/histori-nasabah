@@ -9,17 +9,21 @@ use Carbon\Carbon;
 class KolektibilitasHistory extends Model
 {
     use HasFactory;
+
     protected $table = 'kolektibilitas_history';
+
     protected $fillable = [
-        'nasabah_id', 'kolektibilitas_sebelum', 'kolektibilitas_sesudah', 
-        'tanggal_perubahan', 'petugas', 'keterangan'
+        'nasabah_id',
+        'kolektibilitas_sebelum',
+        'kolektibilitas_sesudah',
+        'tanggal_perubahan',
+        'petugas',
+        'petugas_id',
+        'keterangan'
     ];
 
-    // Tambahkan casting untuk tanggal
     protected $casts = [
-        'tanggal_perubahan' => 'date',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime'
+        'tanggal_perubahan' => 'date'
     ];
 
     public function nasabah()
@@ -27,9 +31,18 @@ class KolektibilitasHistory extends Model
         return $this->belongsTo(Nasabah::class);
     }
 
-    // Accessor untuk memastikan selalu return Carbon object
-    public function getTanggalPerubahanAttribute($value)
+    public function petugasRelasi()
     {
-        return Carbon::parse($value);
+        return $this->belongsTo(Petugas::class, 'petugas_id');
+    }
+
+    public function getNamaPetugasAttribute()
+    {
+        return $this->petugasRelasi ? $this->petugasRelasi->nama_petugas : $this->petugas;
+    }
+
+    public function getDivisiPetugasAttribute()
+    {
+        return $this->petugasRelasi ? $this->petugasRelasi->divisi : null;
     }
 }

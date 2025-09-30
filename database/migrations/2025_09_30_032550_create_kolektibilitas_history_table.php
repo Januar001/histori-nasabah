@@ -14,12 +14,17 @@ return new class extends Migration
         Schema::create('kolektibilitas_history', function (Blueprint $table) {
             $table->id();
             $table->foreignId('nasabah_id')->constrained()->onDelete('cascade');
-            $table->string('kolektibilitas_sebelum');
-            $table->string('kolektibilitas_sesudah');
+            $table->enum('kolektibilitas_sebelum', ['1', '2', '3', '4', '5']);
+            $table->enum('kolektibilitas_sesudah', ['1', '2', '3', '4', '5']);
             $table->date('tanggal_perubahan');
-            $table->string('petugas')->nullable();
+            $table->string('petugas');
+            $table->foreignId('petugas_id')->nullable()->constrained('petugas')->onDelete('set null');
             $table->text('keterangan')->nullable();
             $table->timestamps();
+            
+            $table->index('nasabah_id');
+            $table->index('tanggal_perubahan');
+            $table->index('petugas_id');
         });
     }
 

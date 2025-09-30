@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('nasabahs', function (Blueprint $table) {
             $table->id();
-            $table->string('no');
-            $table->string('kantor');
+            $table->string('no')->nullable();
+            $table->string('kantor')->nullable();
             $table->string('nocif');
             $table->string('rekening');
             $table->string('namadb');
@@ -29,7 +29,7 @@ return new class extends Migration
             $table->decimal('hrbunga', 15, 2)->default(0);
             $table->decimal('xtungbu', 15, 2)->default(0);
             $table->decimal('bakidebet', 15, 2)->default(0);
-            $table->string('kualitas');
+            $table->enum('kualitas', ['1', '2', '3', '4', '5'])->default('1');
             $table->decimal('nilckpn', 15, 2)->default(0);
             $table->decimal('nilliquid', 15, 2)->default(0);
             $table->decimal('nilnliquid', 15, 2)->default(0);
@@ -60,7 +60,15 @@ return new class extends Migration
             $table->string('kdkondisi')->nullable();
             $table->date('tglunas')->nullable();
             $table->decimal('bakidb', 15, 2)->default(0);
+            $table->foreignId('petugas_id')->nullable()->constrained('petugas')->onDelete('set null');
+            $table->date('tanggal_ditangani')->nullable();
+            $table->text('catatan_penanganan')->nullable();
             $table->timestamps();
+            
+            $table->index('nocif');
+            $table->index('rekening');
+            $table->index('kualitas');
+            $table->index('petugas_id');
         });
     }
 

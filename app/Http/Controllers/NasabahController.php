@@ -3,29 +3,47 @@
 namespace App\Http\Controllers;
 
 use App\Models\Nasabah;
+use App\Models\KolektibilitasHistory;
+use App\Models\JanjiBayar;
+use App\Models\Petugas;
 use Illuminate\Http\Request;
+use App\Helpers\QualityHelper;
 
 class NasabahController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Nasabah::query();
+        $query = Nasabah::with('petugas');
 
         if ($request->has('search')) {
             $search = $request->search;
-            $query->where('namadb', 'like', "%{$search}%")
+            $query->where(function($q) use ($search) {
+                $q->where('namadb', 'like', "%{$search}%")
                   ->orWhere('nocif', 'like', "%{$search}%")
                   ->orWhere('rekening', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->has('kualitas')) {
+            $query->where('kualitas', $request->kualitas);
+        }
+
+        if ($request->has('petugas_id')) {
+            $query->where('petugas_id', $request->petugas_id);
         }
 
         $nasabahs = $query->orderBy('namadb')->paginate(20);
+        $petugas = Petugas::aktif()->get();
+        $qualityOptions = QualityHelper::getAllQualityOptions();
 
-        return view('nasabah.index', compact('nasabahs'));
+        return view('nasabah.index', compact('nasabahs', 'petugas', 'qualityOptions'));
     }
 
     public function show($id)
     {
-        $nasabah = Nasabah::with(['historyKolektibilitas', 'janjiBayar'])->findOrFail($id);
-        return view('nasabah.show', compact('nasabah'));
+        $nasabah = Nasabah::with(['historyKolektibilitas', 'janjiBayar', 'petugas'])->findOrFail($id);
+        $petugasList = Petugas::aktif()->get();
+        
+        return view('nasabah.show', compact('nasabah', 'petugasList'));
     }
 }
