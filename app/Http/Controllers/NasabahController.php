@@ -15,7 +15,8 @@ class NasabahController extends Controller
     {
         $query = Nasabah::with('petugas');
 
-        if ($request->has('search')) {
+        // Search functionality
+        if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
                 $q->where('namadb', 'like', "%{$search}%")
@@ -24,12 +25,18 @@ class NasabahController extends Controller
             });
         }
 
-        if ($request->has('kualitas')) {
+        // Kualitas filter
+        if ($request->filled('kualitas')) {
             $query->where('kualitas', $request->kualitas);
         }
 
-        if ($request->has('petugas_id')) {
-            $query->where('petugas_id', $request->petugas_id);
+        // Petugas filter
+        if ($request->filled('petugas_id')) {
+            if ($request->petugas_id === 'null') {
+                $query->whereNull('petugas_id');
+            } else {
+                $query->where('petugas_id', $request->petugas_id);
+            }
         }
 
         $nasabahs = $query->orderBy('namadb')->paginate(20);

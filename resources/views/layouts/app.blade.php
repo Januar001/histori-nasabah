@@ -10,11 +10,16 @@
         body {
             font-size: 0.9rem;
             background-color: #f8f9fa;
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
         }
         .sidebar {
-            min-height: 100vh;
+            width: 280px;
+            flex-shrink: 0;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
             z-index: 1000;
+            background-color: white;
         }
         .sidebar .nav-link {
             color: #333;
@@ -32,7 +37,10 @@
             margin-right: 10px;
         }
         .main-content {
-            min-height: 100vh;
+            flex-grow: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
         }
         .navbar-brand {
             font-weight: 600;
@@ -44,36 +52,69 @@
         .table-responsive {
             font-size: 0.85rem;
         }
+        
+        /* Mobile Styles */
         @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
             .sidebar {
                 position: fixed;
                 top: 0;
                 left: -100%;
                 width: 280px;
+                height: 100vh;
                 transition: all 0.3s;
+                z-index: 1050;
             }
             .sidebar.show {
                 left: 0;
             }
             .main-content {
-                margin-left: 0 !important;
+                width: 100%;
             }
             .mobile-menu-btn {
                 display: block;
             }
-        }
-        @media (min-width: 769px) {
-            .main-content {
-                margin-left: 280px;
+            
+            /* Overlay untuk mobile */
+            .sidebar-overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.5);
+                z-index: 1040;
             }
+            .sidebar-overlay.show {
+                display: block;
+            }
+        }
+        
+        /* Desktop Styles */
+        @media (min-width: 769px) {
             .mobile-menu-btn {
                 display: none;
             }
+            .sidebar-overlay {
+                display: none !important;
+            }
+        }
+        
+        /* Content area styling */
+        .content-area {
+            flex-grow: 1;
+            padding: 1rem;
         }
     </style>
 </head>
 <body>
-    <div class="sidebar bg-white position-fixed" id="sidebar">
+    <!-- Overlay untuk mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+    <div class="sidebar" id="sidebar">
         <div class="p-3 border-bottom">
             <h5 class="text-primary mb-0">
                 <i class="fas fa-history me-2"></i>Histori Nasabah
@@ -122,6 +163,11 @@
             <a href="{{ route('import.stats') }}" class="nav-link {{ request()->is('import/stats') ? 'active' : '' }}">
                 <i class="fas fa-chart-bar"></i> Import Stats
             </a>
+
+            <!-- TAMBAHAN: Menu Riwayat Kolektibilitas -->
+            <a href="{{ route('kolektibilitas.history') }}" class="nav-link {{ request()->is('kolektibilitas/history') ? 'active' : '' }}">
+                <i class="fas fa-exchange-alt"></i> Riwayat Kolektibilitas
+            </a>
             @endif
 
             <div class="mt-auto p-3 border-top">
@@ -162,7 +208,7 @@
             </div>
         </nav>
 
-        <div class="container-fluid p-3">
+        <div class="content-area">
             @if(session('success'))
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
                     <i class="fas fa-check-circle me-2"></i> {{ session('success') }}
@@ -185,17 +231,33 @@
     <script>
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            
             sidebar.classList.toggle('show');
+            overlay.classList.toggle('show');
         }
 
-        document.addEventListener('click', function(event) {
-            const sidebar = document.getElementById('sidebar');
-            const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
-            
-            if (window.innerWidth <= 768) {
-                if (!sidebar.contains(event.target) && !mobileMenuBtn.contains(event.target)) {
-                    sidebar.classList.remove('show');
+        // Close sidebar when clicking on overlay (mobile)
+        document.getElementById('sidebarOverlay').addEventListener('click', function() {
+            toggleSidebar();
+        });
+
+        // Close sidebar when clicking on a link (mobile)
+        document.querySelectorAll('.sidebar .nav-link').forEach(link => {
+            link.addEventListener('click', function() {
+                if (window.innerWidth <= 768) {
+                    toggleSidebar();
                 }
+            });
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 768) {
+                const sidebar = document.getElementById('sidebar');
+                const overlay = document.getElementById('sidebarOverlay');
+                sidebar.classList.remove('show');
+                overlay.classList.remove('show');
             }
         });
     </script>
