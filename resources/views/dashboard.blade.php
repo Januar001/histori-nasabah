@@ -291,7 +291,7 @@
                                 </td>
                                 <td>
                                     <div class="d-flex align-items-center">
-                                        <span class="badge bg-light text-dark me-1">
+                                        <span class="badge {{ \App\Helpers\QualityHelper::getQualityBadge($aktivitas->kolektibilitas_sebelum) }} me-1">
                                             {{ \App\Helpers\QualityHelper::getQualityLabel($aktivitas->kolektibilitas_sebelum) }}
                                         </span>
                                         <i class="fas fa-arrow-right text-muted mx-1 small"></i>

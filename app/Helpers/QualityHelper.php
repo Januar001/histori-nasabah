@@ -23,8 +23,8 @@ class QualityHelper
             '1' => 'bg-success',
             '2' => 'bg-info',
             '3' => 'bg-warning',
-            '4' => 'bg-danger',
-            '5' => 'bg-dark'
+            '4' => 'bg-custom-orange',
+            '5' => 'bg-danger'
         ];
 
         return $badgeMap[$numericValue] ?? 'bg-secondary';
@@ -36,8 +36,8 @@ class QualityHelper
             '1' => 'success',
             '2' => 'info',
             '3' => 'warning',
-            '4' => 'danger',
-            '5' => 'dark'
+            '4' => 'custom-orange',
+            '5' => 'danger'
         ];
 
         return $colorMap[$numericValue] ?? 'secondary';

@@ -74,7 +74,11 @@ class PetugasController extends Controller
             'status_aktif' => 'boolean'
         ]);
 
-        $petugas->update($request->all());
+        // Handle checkbox status_aktif
+        $data = $request->all();
+        $data['status_aktif'] = $request->has('status_aktif') ? 1 : 0;
+
+        $petugas->update($data);
 
         return redirect()->route('petugas.index')
             ->with('success', 'Data petugas berhasil diupdate!');

@@ -41,6 +41,7 @@
             min-width: 0;
             display: flex;
             flex-direction: column;
+            min-height: 100vh;
         }
         .navbar-brand {
             font-weight: 600;
@@ -51,6 +52,11 @@
         }
         .table-responsive {
             font-size: 0.85rem;
+        }
+
+        .bg-custom-orange {
+            background-color: #fc7d14 !important;
+            color: white !important;
         }
         
         /* Mobile Styles */
@@ -107,6 +113,17 @@
         .content-area {
             flex-grow: 1;
             padding: 1rem;
+        }
+        
+        /* Footer styling */
+        .main-footer {
+            background-color: white;
+            border-top: 1px solid #dee2e6;
+            padding: 0.75rem 1rem;
+            text-align: center;
+            color: #6c757d;
+            font-size: 0.85rem;
+            margin-top: auto;
         }
     </style>
 </head>
@@ -225,6 +242,11 @@
 
             @yield('content')
         </div>
+        
+        <!-- Footer yang diperbaiki -->
+        <footer class="main-footer">
+            &copy; {{ date('Y') }} Histori Nasabah &mdash; PT. BPR Buduran Deltapurnama - Januar BPRDP.
+        </footer>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

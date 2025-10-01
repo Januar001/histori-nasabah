@@ -128,7 +128,7 @@
                                 </td>
                                 <td>
                                     <div class="d-flex align-items-center">
-                                        <span class="badge bg-light text-dark me-2">
+                                        <span class="badge {{ \App\Helpers\QualityHelper::getQualityBadge($import->kolektibilitas_sebelum) }} me-2">
                                             {{ \App\Helpers\QualityHelper::getQualityLabel($import->kolektibilitas_sebelum) }}
                                         </span>
                                         <i class="fas fa-arrow-right text-muted me-2"></i>
@@ -173,7 +173,7 @@
 <div class="row mt-3">
     <div class="col-12">
         <div class="d-flex justify-content-center">
-            {{ $imports->links() }}
+            {{ $imports->links('pagination::bootstrap-5') }}
         </div>
     </div>
 </div>
