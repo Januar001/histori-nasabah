@@ -210,11 +210,11 @@
                         <span class="badge bg-light text-dark">{{ $history->petugas }}</span>
                     </div>
                     <p class="mb-1">
-                        <span class="text-danger">
+                        <span class="badge {{ \App\Helpers\QualityHelper::getQualityBadge($history->kolektibilitas_sebelum) }}">
                             {{ \App\Helpers\QualityHelper::getQualityLabel($history->kolektibilitas_sebelum) }}
                         </span> 
                         <i class="fas fa-arrow-right mx-2 text-muted"></i>
-                        <span class="text-success">
+                        <span class="badge {{ \App\Helpers\QualityHelper::getQualityBadge($history->kolektibilitas_sesudah) }}">
                             {{ \App\Helpers\QualityHelper::getQualityLabel($history->kolektibilitas_sesudah) }}
                         </span>
                     </p>
