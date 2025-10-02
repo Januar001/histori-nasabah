@@ -8,7 +8,7 @@ class QualityHelper
     {
         $qualityMap = [
             '1' => 'LANCAR',
-            '2' => 'DALAM PERHATIAN KHUSUS',
+            '2' => 'DPK',
             '3' => 'KURANG LANCAR',
             '4' => 'DIRAGUKAN',
             '5' => 'MACET'
@@ -57,7 +57,7 @@ class QualityHelper
     {
         return [
             '1' => '1 - LANCAR',
-            '2' => '2 - DALAM PERHATIAN KHUSUS',
+            '2' => '2 - DPK',
             '3' => '3 - KURANG LANCAR',
             '4' => '4 - DIRAGUKAN',
             '5' => '5 - MACET'

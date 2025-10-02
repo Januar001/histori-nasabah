@@ -20,11 +20,13 @@ class DashboardController extends Controller
     $janjiHariIni = JanjiBayar::whereDate('tanggal_janji', today())->count();
     $janjiBulanIni = JanjiBayar::whereMonth('tanggal_janji', now()->month)->count();
     
+    // PERBAIKAN: Query performance dengan join yang benar
     $performance = DB::table('kolektibilitas_history')
         ->join('petugas', 'kolektibilitas_history.petugas_id', '=', 'petugas.id')
         ->whereNotNull('kolektibilitas_history.petugas_id')
         ->whereMonth('kolektibilitas_history.created_at', now()->month)
         ->select(
+            'petugas.id as petugas_id', // TAMBAHKAN INI
             'petugas.nama_petugas as petugas',
             'petugas.divisi',
             DB::raw('COUNT(*) as total_perubahan'),
@@ -39,7 +41,6 @@ class DashboardController extends Controller
         ->limit(10)
         ->get();
 
-    // PERUBAHAN: Ambil data kolektibilitas dari tabel nasabah (bukan dari history perubahan)
     $distribusiKolektibilitas = Nasabah::select(
             'kualitas',
             DB::raw('COUNT(*) as total')
@@ -51,11 +52,10 @@ class DashboardController extends Controller
             return [
                 'kualitas' => QualityHelper::getQualityLabel($item->kualitas),
                 'total' => $item->total,
-                'kode_kualitas' => $item->kualitas // Tambahkan kode untuk sorting
+                'kode_kualitas' => $item->kualitas
             ];
         });
 
-    // Jika ingin data perubahan bulan ini (opsional)
     $changesThisMonth = KolektibilitasHistory::whereMonth('created_at', now()->month)
         ->select('kolektibilitas_sesudah', DB::raw('COUNT(*) as total'))
         ->groupBy('kolektibilitas_sesudah')
@@ -112,6 +112,34 @@ class DashboardController extends Controller
         ->groupBy('jenis_perubahan')
         ->get();
 
+    // DATA BARU: Nasabah dengan Janji Bayar
+    $nasabahJanjiHariIni = Nasabah::whereHas('janjiBayar', function($query) {
+            $query->whereDate('tanggal_janji', today());
+        })
+        ->with(['janjiBayar' => function($query) {
+            $query->whereDate('tanggal_janji', today())
+                  ->orderBy('tanggal_janji', 'desc');
+        }])
+        ->orderBy('namadb')
+        ->get();
+
+    $nasabahJanjiMendatang = Nasabah::whereHas('janjiBayar', function($query) {
+            $query->whereDate('tanggal_janji', '>', today());
+        })
+        ->with(['janjiBayar' => function($query) {
+            $query->whereDate('tanggal_janji', '>', today())
+                  ->orderBy('tanggal_janji', 'asc')
+                  ->limit(1);
+        }])
+        ->orderBy('namadb')
+        ->get();
+
+    $janjiPending = JanjiBayar::with('nasabah')
+        ->where('status', 'pending')
+        ->whereDate('tanggal_janji', '>=', today())
+        ->orderBy('tanggal_janji', 'asc')
+        ->get();
+
     return view('dashboard', compact(
         'totalNasabah', 
         'totalPerubahan', 
@@ -120,14 +148,17 @@ class DashboardController extends Controller
         'performance',
         'recentChanges',
         'changesThisMonth',
-        'distribusiKolektibilitas', // GANTI: distribusi kolektibilitas
+        'distribusiKolektibilitas',
         'monthlyTrend',
         'topChanges',
         'janjiStatus',
         'nasabahDitangani',
         'petugasAktif',
         'aktivitasPerubahan',
-        'statistikPerubahan'
+        'statistikPerubahan',
+        'nasabahJanjiHariIni',
+        'nasabahJanjiMendatang',
+        'janjiPending'
     ));
 }
 }
