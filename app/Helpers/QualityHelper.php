@@ -63,4 +63,18 @@ class QualityHelper
             '5' => '5 - MACET'
         ];
     }
+
+    public static function getTunggakanColor($value)
+    {
+        if ($value == 0) {
+            return 'bg-success'; // hijau
+        } elseif ($value == 1) {
+            return 'bg-warning text-dark'; // kuning
+        } elseif ($value >= 2) {
+            return 'bg-danger'; // merah
+        } else {
+            return 'bg-secondary'; // default
+        }
+    }
+
 }

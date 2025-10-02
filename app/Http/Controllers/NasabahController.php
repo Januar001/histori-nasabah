@@ -51,6 +51,8 @@ class NasabahController extends Controller
         $nasabah = Nasabah::with(['historyKolektibilitas', 'janjiBayar', 'petugas'])->findOrFail($id);
         $petugasList = Petugas::aktif()->get();
         
+        // return dd($nasabah);
+
         return view('nasabah.show', compact('nasabah', 'petugasList'));
     }
 }

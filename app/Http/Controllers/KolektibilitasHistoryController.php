@@ -108,4 +108,6 @@ class KolektibilitasHistoryController extends Controller
         
         return view('kolektibilitas-history.show', compact('history'));
     }
+
+    
 }

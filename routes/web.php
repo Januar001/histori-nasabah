@@ -37,4 +37,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/kolektibilitas/history', [KolektibilitasHistoryController::class, 'index'])->name('kolektibilitas.history');
         Route::get('/kolektibilitas/history/{id}', [KolektibilitasHistoryController::class, 'show'])->name('kolektibilitas.history.show');
             });
+        Route::get('/kolektibilitas/murni', [KolektibilitasHistoryController::class, 'kolekMurni'])->name('kolektibilitas.murni');
+        Route::get('/kolektibilitas/murni/ao/{petugasId}', [KolektibilitasHistoryController::class, 'kolekMurniDetail'])->name('kolektibilitas.murni.ao');
 });
