@@ -30,4 +30,9 @@ class JanjiBayar extends Model
     {
         return $this->belongsTo(Nasabah::class);
     }
+
+    public function petugas()
+    {
+        return $this->belongsTo(Petugas::class, 'petugas_id');
+    }
 }

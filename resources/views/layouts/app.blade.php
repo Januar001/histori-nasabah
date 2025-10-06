@@ -185,6 +185,10 @@
             <a href="{{ route('kolektibilitas.history') }}" class="nav-link {{ request()->is('kolektibilitas/history') ? 'active' : '' }}">
                 <i class="fas fa-exchange-alt"></i> Riwayat Kolektibilitas
             </a>
+
+            <a href="{{ route('analisis.pergerakan-kol') }}" class="nav-link {{ request()->is('analisis/pergerakan-kol') ? 'active' : '' }}">
+                <i class="fas fa-analytics"></i> Analisis Pergerakan
+            </a>
             @endif
 
             <div class="mt-auto p-3 border-top">
