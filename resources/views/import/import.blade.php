@@ -50,7 +50,7 @@
                     @csrf
                     <div class="mb-4">
                         <label for="file" class="form-label">Pilih File Excel</label>
-                        <input type="file" class="form-control" id="file" name="file" 
+                        <input type="file" class="form-control" id="file" name="file"
                                accept=".xlsx,.xls" required>
                         <div class="form-text">
                             Format file harus .xlsx atau .xls. Maksimal 10MB.
@@ -73,15 +73,15 @@
                         <div class="col-md-6">
                             <ul class="text-muted">
                                 <li>Data akan diupdate berdasarkan <strong>Nomor Rekening</strong></li>
-                                <li>Perubahan <strong>kualitas/kolektibilitas</strong> akan tercatat otomatis</li>
+                                <li>Semua <strong>perubahan data</strong> dan <strong>nasabah baru</strong> akan tercatat di history</li>
                                 <li>Format <strong>kualitas menggunakan angka</strong> (1,2,3,4,5)</li>
                             </ul>
                         </div>
                         <div class="col-md-6">
                             <ul class="text-muted">
                                 <li>Tanggal otomatis dikonversi ke format YYYY-MM-DD</li>
-                                <li>Nilai numeric dibersihkan dari format currency</li>
-                                <li>Data duplikat akan diupdate</li>
+                                <li>Nilai numerik dibersihkan dari format currency</li>
+                                <li>Jika tidak ada data yang berubah, tidak akan dicatat</li>
                             </ul>
                         </div>
                     </div>
