@@ -6,6 +6,7 @@ use App\Http\Controllers\ImportController;
 use App\Http\Controllers\NasabahController;
 use App\Http\Controllers\PetugasController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\AnalisisAoController;
 use App\Http\Controllers\JanjiBayarController;
 use App\Http\Controllers\PenangananController;
 use App\Http\Controllers\KolektibilitasHistoryController;
@@ -36,5 +37,6 @@ Route::middleware('auth')->group(function () {
         Route::post('/import/clear-history', [ImportController::class, 'clearHistory'])->name('import.clear-history');
         Route::get('/kolektibilitas/history', [KolektibilitasHistoryController::class, 'index'])->name('kolektibilitas.history');
         Route::get('/kolektibilitas/history/{id}', [KolektibilitasHistoryController::class, 'show'])->name('kolektibilitas.history.show');
+        Route::get('/analisis/ao', [AnalisisAoController::class, 'index'])->name('analisis.ao');
             });
 });

@@ -151,6 +151,10 @@
             <a href="{{ route('petugas.index') }}" class="nav-link {{ request()->is('petugas*') ? 'active' : '' }}">
                 <i class="fas fa-user-tie"></i> Data Petugas
             </a>
+
+            <a href="{{ route('analisis.ao') }}" class="nav-link {{ request()->is('analisis/ao*') ? 'active' : '' }}">
+                <i class="fas fa-chart-line"></i> Kinerja AO
+            </a>
             
             <div class="nav-link text-muted small mt-3">FILTER CEPAT</div>
             
