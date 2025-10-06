@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Carbon\Carbon;
 
 class JanjiBayar extends Model
 {
@@ -12,18 +11,16 @@ class JanjiBayar extends Model
 
     protected $table = 'janji_bayar';
 
+    /**
+     * Sesuaikan dengan nama kolom di database Anda.
+     */
     protected $fillable = [
         'nasabah_id',
         'tanggal_janji',
-        'nominal_janji',
+        'nominal_janji', // Diubah dari 'nominal'
         'status',
-        'keterangan',
-        'created_by'
-    ];
-
-    protected $casts = [
-        'tanggal_janji' => 'date',
-        'nominal_janji' => 'decimal:2'
+        'keterangan',    // Diubah dari 'catatan'
+        'created_by',    // Ditambahkan
     ];
 
     public function nasabah()
@@ -31,8 +28,13 @@ class JanjiBayar extends Model
         return $this->belongsTo(Nasabah::class);
     }
 
-    public function petugas()
-    {
-        return $this->belongsTo(Petugas::class, 'petugas_id');
-    }
+    /**
+     * Relasi ke Petugas tidak bisa digunakan karena tidak ada kolom 'petugas_id'.
+     * Kita akan memanggil nama petugas melalui kolom 'created_by'.
+     * Hapus atau komentari method petugas() jika ada.
+     */
+    // public function petugas()
+    // {
+    //     return $this->belongsTo(Petugas::class, 'petugas_id');
+    // }
 }

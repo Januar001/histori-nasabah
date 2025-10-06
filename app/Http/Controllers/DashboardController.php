@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request; // Import Request
+use Illuminate\Http\Request;
 use App\Helpers\QualityHelper;
 use App\Models\Nasabah;
 use App\Models\Petugas;
@@ -13,17 +13,17 @@ use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
-    public function index(Request $request) // Tambahkan Request $request
+     public function index(Request $request)
     {
         // === Data Statistik Utama ===
         $totalNasabah = Nasabah::count();
         $totalBakiDebet = Nasabah::sum('bakidebet');
         $petugasAktif = Petugas::where('status_aktif', true)->count();
         
-        // === Statistik Janji Bayar ===
-        $janjiBayarAktif = JanjiBayar::where('status', 'dijadwalkan')->count();
-        $janjiBayarDitepatiBulanIni = JanjiBayar::where('status', 'ditepati')->whereMonth('tanggal_janji', now()->month)->whereYear('tanggal_janji', now()->year)->count();
-        $janjiBayarIngkarBulanIni = JanjiBayar::where('status', 'ingkar')->whereMonth('tanggal_janji', now()->month)->whereYear('tanggal_janji', now()->year)->count();
+        // === Statistik Janji Bayar (disesuaikan dengan status baru) ===
+        $janjiBayarAktif = JanjiBayar::where('status', 'pending')->count();
+        $janjiBayarDitepatiBulanIni = JanjiBayar::where('status', 'sukses')->whereMonth('tanggal_janji', now()->month)->whereYear('tanggal_janji', now()->year)->count();
+        $janjiBayarIngkarBulanIni = JanjiBayar::where('status', 'gagal')->whereMonth('tanggal_janji', now()->month)->whereYear('tanggal_janji', now()->year)->count();
 
         // === Analisis Tren Perubahan (Bulan Ini vs Bulan Lalu) ===
         $membaikBulanIni = $this->getPerubahanCount(now()->startOfMonth(), now()->endOfMonth(), 'membaik');
@@ -45,15 +45,12 @@ class DashboardController extends Controller
             ->whereMonth('kolektibilitas_history.created_at', now()->month)
             ->whereYear('kolektibilitas_history.created_at', now()->year)
             ->select(
-                'petugas.nama_petugas as petugas',
-                'petugas.divisi',
+                'petugas.nama_petugas as petugas', 'petugas.divisi',
                 DB::raw('COUNT(*) as total_perubahan'),
                 DB::raw('SUM(CASE WHEN kolektibilitas_sesudah < kolektibilitas_sebelum THEN 1 ELSE 0 END) as berhasil_memperbaiki')
             )
             ->groupBy('petugas.id', 'petugas.nama_petugas', 'petugas.divisi')
-            ->orderBy('berhasil_memperbaiki', 'desc')
-            ->limit(5)
-            ->get();
+            ->orderBy('berhasil_memperbaiki', 'desc')->limit(5)->get();
 
         // === Distribusi Kolektibilitas (Charts) ===
         $distribusiPerJumlah = Nasabah::select('kualitas', DB::raw('COUNT(*) as total'))->groupBy('kualitas')->orderBy('kualitas')->get()->mapWithKeys(fn($item) => [QualityHelper::getQualityLabel($item->kualitas) => $item->total]);
@@ -62,43 +59,23 @@ class DashboardController extends Controller
         // === Aktivitas Perubahan Terbaru ===
         $aktivitasPerubahan = KolektibilitasHistory::with(['nasabah', 'petugasRelasi'])->orderBy('created_at', 'desc')->limit(5)->get();
 
-        // === [BARU] Daftar Janji Bayar Mendatang ===
-        $startDate = $request->input('start_date', Carbon::now()->toDateString());
-        $endDate = $request->input('end_date', Carbon::now()->addDays(7)->toDateString());
-
-        $janjiBayarList = JanjiBayar::where('status', 'dijadwalkan')
+        // === Daftar Janji Bayar dengan Query yang Sudah Diperbaiki ===
+        $startDate = $request->input('start_date', Carbon::now()->startOfMonth()->toDateString());
+        $endDate = $request->input('end_date', Carbon::now()->endOfMonth()->toDateString());
+        
+        $janjiBayarList = JanjiBayar::where('status', 'pending') // DIUBAH DARI 'dijadwalkan'
             ->whereBetween('tanggal_janji', [$startDate, $endDate])
-            ->with([
-                'nasabah' => function ($query) {
-                    $query->select('id', 'namadb', 'nocif'); // Hanya ambil kolom yang dibutuhkan
-                }, 
-                'petugas' => function ($query) {
-                    $query->select('id', 'nama_petugas'); // Hanya ambil kolom yang dibutuhkan
-                }
-            ])
+            ->with('nasabah:id,namadb,nocif') // Relasi ke petugas dihapus
             ->orderBy('tanggal_janji', 'asc')
             ->get();
-
         
-
         return view('dashboard', compact(
-            'totalNasabah',
-            'totalBakiDebet',
-            'petugasAktif',
-            'janjiBayarAktif',
-            'janjiBayarDitepatiBulanIni',
-            'janjiBayarIngkarBulanIni',
-            'trenPerubahan',
-            'performance',
-            'distribusiPerJumlah',
-            'distribusiPerBakiDebet',
-            'aktivitasPerubahan',
-            'janjiBayarList', // Kirim data janji bayar
-            'startDate',      // Kirim tanggal filter
-            'endDate'         // Kirim tanggal filter
+            'totalNasabah', 'totalBakiDebet', 'petugasAktif', 'janjiBayarAktif', 'janjiBayarDitepatiBulanIni', 
+            'janjiBayarIngkarBulanIni', 'trenPerubahan', 'performance', 'distribusiPerJumlah', 
+            'distribusiPerBakiDebet', 'aktivitasPerubahan', 'janjiBayarList', 'startDate', 'endDate'
         ));
     }
-
+    
     private function getPerubahanCount(Carbon $start, Carbon $end, string $type): int
     {
         $query = KolektibilitasHistory::whereBetween('tanggal_perubahan', [$start, $end]);
